@@ -22,7 +22,8 @@
  ***************************************************************************/
 """
 from qgis.PyQt.QtCore import QLocale, QTranslator, QCoreApplication
-from qgis.core import QgsSettings, QgsFillSymbol, QgsSingleSymbolRenderer, QgsVectorLayer, QgsFeature, QgsProject, QgsWkbTypes, QgsMapLayerType, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsGeometry, QgsDistanceArea
+from qgis.core import QgsSettings, QgsFillSymbol, QgsSingleSymbolRenderer, QgsVectorLayer, QgsFeature, QgsProject
+from qgis.core import QgsWkbTypes, QgsMapLayerType, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsGeometry
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 from qgis.gui import QgsMapToolEmitPoint
@@ -67,6 +68,9 @@ class PluginBasique:
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+
+        # Pour pouvoir nettoyer le projet + remettre l'outil à la fermeture de la fenetre
+        self.ancien_tool = None
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -181,13 +185,16 @@ class PluginBasique:
             self.iface.removeToolBarIcon(action)
 
     def displayPoint(self, pointXY):
-        coords = []
+        """ 
+        USER STORY 2
+        """
         projet = QgsProject.instance()
 
+        coords = []
         # Changement de projection
-        source_crs = projet.crs()
+        projet_crs = projet.crs()
         dest_crs = QgsCoordinateReferenceSystem(4326)
-        transformation = QgsCoordinateTransform(source_crs, dest_crs, QgsProject.instance())
+        transformation = QgsCoordinateTransform(projet_crs, dest_crs, QgsProject.instance())
         new_pointXY = transformation.transform(pointXY)
 
         # Affichage des coordonnées
@@ -200,13 +207,14 @@ class PluginBasique:
         return coords
 
     def displayAdress(self, pointXY):
-
+        """
+        USER STORY 3
+        """
         # Code inspiré du dépot github disponible à l'adresse : https://github.com/anquetos/meteoviz-streamlit-app/blob/a92c6dff582f00ef562b2738120110e7be3ee943/api_adresse.py
         # Qui se présente comme : "Module designed to search for addresses in France using the address API"
 
         coords = self.displayPoint(pointXY)
         REVERSE_URL = 'https://api-adresse.data.gouv.fr/reverse'
-
         parametres = {
             'lon': coords[0],
             'lat': coords[1]
@@ -215,6 +223,7 @@ class PluginBasique:
 
         n_loop = len(str(lat).split('.')[1])
 
+        # Récupération de l'adresse à partir des coordonnées
         while n_loop != 0:
             r = requests.get(REVERSE_URL, params=parametres)
 
@@ -231,6 +240,7 @@ class PluginBasique:
 
             n_loop -= 1
 
+        # Affichage des coordonnées
         self.dlg.adresse_affichage.setText(f"{adresse[0]["name"]}, {adresse[0]["postcode"]}, {adresse[0]["city"]}")
 
     def displayNbrObject(self, pointXY) :
@@ -265,29 +275,32 @@ class PluginBasique:
             if feature.geometry().intersects(buffered_geom) :
                 #si features est dans l'attribut, on ajoute 1 au compteur
                 compteur += 1
+        print('Annuler a été cliqué')
 
         self.dlg.nombreAffichage.setText(str(compteur))
         
         return buffered_geom
 
     def displayBufferLayer(self, pointXY):
+        projet = QgsProject.instance()
 
+        # Création de l'entité à ajouter      
         buffer = self.displayNbrObject(pointXY)
+        new_entity = QgsFeature()
+        new_entity.setGeometry(buffer)
+
+        # Création de la couche
         new_layer = QgsVectorLayer(
             "Polygon?crs=EPSG:4326",
             "Zone Tampon autour du point cliqué",
             "memory"
         )
 
-        projet = QgsProject.instance()
-
-        new_entity = QgsFeature()
-
-        new_entity.setGeometry(buffer)
-
+        # Ajout des éléments
         new_layer.dataProvider().addFeatures([new_entity])
         new_layer.updateExtents()
 
+        # Esthétisme de la couche
         symbol = QgsFillSymbol.createSimple({
             "style": "no",
             "outline_color": "0,0,0,255",
@@ -295,9 +308,23 @@ class PluginBasique:
             "outline_width": "0.3"
         })
         new_layer.setRenderer(QgsSingleSymbolRenderer(symbol))
+
         projet.addMapLayer(new_layer)
 
 
+    def echap_cross_clicked(self):
+        # Suppression de l'outil clic
+        self.canvas.unsetMapTool(self.pointTool)
+
+    def annuler_clicked(self):
+        projet = QgsProject.instance()
+
+        # Suppression de l'outil clic
+        self.canvas.unsetMapTool(self.pointTool)
+
+        # Suppression des couches créées du projet et donc de la carte (léger bug, ça se retire de la carte au dézoom)
+        for layer in projet.mapLayersByName("Zone Tampon autour du point cliqué") : 
+            projet.removeMapLayer(layer.id())
 
     def run(self):
         """Run method that performs all the real work"""
@@ -306,7 +333,7 @@ class PluginBasique:
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
         if self.first_start == True:
             self.first_start = False
-            self.dlg = PluginBasiqueDialog()
+            self.dlg = PluginBasiqueDialog(extension=self)
 
 
         #USER STORY 1 : Affichage d'une liste déroulante des ponctuels du projet
@@ -319,30 +346,40 @@ class PluginBasique:
             if layer.type()== QgsMapLayerType.VectorLayer and layer.geometryType() == QgsWkbTypes.PointGeometry :
                 self.dlg.comboBox.addItem(layer.name())
 
-
         #USER STORY 2 : Affichage des coordonnées d'un point sur la carte au clic de la souris
         
+        # Nettoyage des anciennes coordonnées
         self.dlg.long_affichage.clear()
         self.dlg.lat_affichage.clear()
 
+        # Lien du clic sur la carte avec l'affichage des coordonnées
         self.canvas = self.iface.mapCanvas()
+        self.ancien_tool = self.canvas.mapTool()
         self.pointTool = QgsMapToolEmitPoint(self.canvas)
         self.pointTool.canvasClicked.connect(self.displayPoint)
         self.canvas.setMapTool(self.pointTool)
 
         #USER STORY 3 : Affichage de l'adresse la plus proche dans la BAN quand on clique sur un point
 
+        # Nettoyage de l'ancienne adresse        
         self.dlg.adresse_affichage.clear()
 
+        # Recherche de l'adresse et affichage sur le plugin
         self.pointTool.canvasClicked.connect(self.displayAdress)
 
         # USER STORY 4 : Affichage d'un nombre d'objets de la couche sélectionnée en fonction d'un périmètre entrée par l'utilisateur autour du point cliqué.
 
+        # Calcul du buffer, du nombre d'objets et affichage sur le plugin
         self.pointTool.canvasClicked.connect(self.displayNbrObject)
 
         # USER STORY 5 : Visualisation de la zone tampon de X mètre autour du point cliqué
 
+        # Affichage sur la carte de la zone tampon
         self.pointTool.canvasClicked.connect(self.displayBufferLayer)
+
+        # USER STORY 6 : Fermeture propre de la fenetre et nettoyage des couches via le bouton annuler
+
+        # Tout se passe dans plugin_basique_dialog.py en dialogue avec les fonctions echap_crosse_clicked() et annuler_clicked() au-dessus
 
         # show the dialog
         self.dlg.show()

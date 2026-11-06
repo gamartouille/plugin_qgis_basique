@@ -6,73 +6,92 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>742</width>
-    <height>418</height>
+    <width>456</width>
+    <height>417</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>PluginBasiqueAkha</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(222, 221, 218);
+border-color: rgb(119, 118, 123);</string>
+  </property>
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
     <rect>
-     <x>370</x>
+     <x>360</x>
      <y>380</y>
-     <width>341</width>
-     <height>32</height>
+     <width>82</width>
+     <height>26</height>
     </rect>
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
    <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+    <set>QDialogButtonBox::Cancel</set>
    </property>
   </widget>
   <widget class="QComboBox" name="comboBox">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>50</y>
-     <width>481</width>
-     <height>26</height>
+     <y>40</y>
+     <width>431</width>
+     <height>25</height>
     </rect>
    </property>
   </widget>
   <widget class="QLabel" name="layerLabel">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>20</y>
-     <width>151</width>
+     <x>9</x>
+     <y>9</y>
+     <width>141</width>
      <height>18</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <italic>true</italic>
+    </font>
+   </property>
    <property name="text">
-    <string>Couches Ponctuelles :</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#c01c28;&quot;&gt;Couches Ponctuelles :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLabel" name="coords">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>90</y>
-     <width>191</width>
+     <y>80</y>
+     <width>173</width>
      <height>18</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <italic>true</italic>
+    </font>
+   </property>
    <property name="text">
-    <string>Coordonnées point cliqué :</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#c01c28;&quot;&gt;Coordonnées point cliqué :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLabel" name="longitude">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>130</y>
-     <width>91</width>
+     <y>110</y>
+     <width>93</width>
      <height>18</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <bold>true</bold>
+    </font>
    </property>
    <property name="text">
     <string>LONGITUDE :</string>
@@ -81,79 +100,64 @@
   <widget class="QLabel" name="latitude">
    <property name="geometry">
     <rect>
-     <x>390</x>
-     <y>130</y>
-     <width>81</width>
+     <x>10</x>
+     <y>150</y>
+     <width>79</width>
      <height>18</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <bold>true</bold>
+    </font>
+   </property>
    <property name="text">
     <string>LATITUDE :</string>
-   </property>
-  </widget>
-  <widget class="QTextEdit" name="long_affichage">
-   <property name="geometry">
-    <rect>
-     <x>470</x>
-     <y>120</y>
-     <width>261</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QTextEdit" name="lat_affichage">
-   <property name="geometry">
-    <rect>
-     <x>110</x>
-     <y>120</y>
-     <width>261</width>
-     <height>31</height>
-    </rect>
    </property>
   </widget>
   <widget class="QLabel" name="adresse">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>170</y>
-     <width>271</width>
+     <y>190</y>
+     <width>236</width>
      <height>18</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Adresse la plus proche dans la BAN :</string>
+   <property name="font">
+    <font>
+     <italic>true</italic>
+    </font>
    </property>
-  </widget>
-  <widget class="QTextEdit" name="adresse_affichage">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>200</y>
-     <width>711</width>
-     <height>31</height>
-    </rect>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#c01c28;&quot;&gt;Adresse la plus proche dans la BAN :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLabel" name="nombreLabel">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>250</y>
-     <width>271</width>
+     <y>270</y>
+     <width>237</width>
      <height>18</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <italic>true</italic>
+    </font>
+   </property>
    <property name="text">
-    <string>Nombre d'objets dans un périmètre :</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#c01c28;&quot;&gt;Nombre d'objets dans un périmètre :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QSpinBox" name="perimetreBox">
    <property name="geometry">
     <rect>
-     <x>220</x>
-     <y>280</y>
-     <width>44</width>
-     <height>27</height>
+     <x>90</x>
+     <y>340</y>
+     <width>71</width>
+     <height>25</height>
     </rect>
    </property>
    <property name="maximum">
@@ -164,8 +168,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>290</y>
-     <width>41</width>
+     <y>310</y>
+     <width>30</width>
      <height>18</height>
     </rect>
    </property>
@@ -176,32 +180,22 @@
   <widget class="QLabel" name="metresLabel">
    <property name="geometry">
     <rect>
-     <x>280</x>
-     <y>290</y>
-     <width>191</width>
-     <height>21</height>
+     <x>170</x>
+     <y>340</y>
+     <width>155</width>
+     <height>18</height>
     </rect>
    </property>
    <property name="text">
     <string>mètres du point cliqué.</string>
    </property>
   </widget>
-  <widget class="QTextEdit" name="nombreAffichage">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>280</y>
-     <width>51</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QLabel" name="phrase">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>290</y>
-     <width>81</width>
+     <x>9</x>
+     <y>341</y>
+     <width>72</width>
      <height>18</height>
     </rect>
    </property>
@@ -209,17 +203,69 @@
     <string>à moins de</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="chercherButton">
+  <widget class="QLabel" name="adresse_affichage">
    <property name="geometry">
     <rect>
-     <x>490</x>
-     <y>280</y>
-     <width>88</width>
-     <height>31</height>
+     <x>10</x>
+     <y>230</y>
+     <width>431</width>
+     <height>18</height>
     </rect>
    </property>
    <property name="text">
-    <string>Chercher</string>
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lat_affichage">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>150</y>
+     <width>331</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="long_affichage">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>110</y>
+     <width>311</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="nombreAffichage">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>310</y>
+     <width>51</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="phrase_2">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>310</y>
+     <width>72</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>objets</string>
    </property>
   </widget>
  </widget>

@@ -24,7 +24,7 @@
 
 import os
 
-from qgis.PyQt import uic
+from qgis.PyQt import uic, QtCore
 from qgis.PyQt import QtWidgets
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -37,7 +37,7 @@ FORM_CLASS, _ = uic.loadUiType(
 
 
 class PluginBasiqueDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, extension=None):
         """Constructor."""
         super(PluginBasiqueDialog, self).__init__(parent)
         # Set up the user interface from Designer through FORM_CLASS.
@@ -46,3 +46,15 @@ class PluginBasiqueDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+        self.extension = extension
+        self.button_box.rejected.connect(self.extension.annuler_clicked)
+
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key.Key_Escape:
+            self.extension.echap_cross_clicked()
+            self.close()
+        else:  
+            super().keyPressEvent(event)
+
+    def closeEvent(self, event):
+        self.extension.echap_cross_clicked()
