@@ -48,7 +48,7 @@ border-color: rgb(119, 118, 123);</string>
     <rect>
      <x>9</x>
      <y>9</y>
-     <width>141</width>
+     <width>191</width>
      <height>18</height>
     </rect>
    </property>
@@ -58,7 +58,7 @@ border-color: rgb(119, 118, 123);</string>
     </font>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#c01c28;&quot;&gt;Couches Ponctuelles :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:normal; color:#c01c28;&quot;&gt;COUCHES PONCTUELLES :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLabel" name="coords">
@@ -66,7 +66,7 @@ border-color: rgb(119, 118, 123);</string>
     <rect>
      <x>10</x>
      <y>80</y>
-     <width>173</width>
+     <width>231</width>
      <height>18</height>
     </rect>
    </property>
@@ -76,7 +76,7 @@ border-color: rgb(119, 118, 123);</string>
     </font>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#c01c28;&quot;&gt;Coordonnées point cliqué :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:normal; color:#c01c28;&quot;&gt;COORDONNÉES POINT CLIQUÉ :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLabel" name="longitude">
@@ -94,7 +94,7 @@ border-color: rgb(119, 118, 123);</string>
     </font>
    </property>
    <property name="text">
-    <string>LONGITUDE :</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:400; font-style:italic;&quot;&gt;Longitude :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLabel" name="latitude">
@@ -112,7 +112,7 @@ border-color: rgb(119, 118, 123);</string>
     </font>
    </property>
    <property name="text">
-    <string>LATITUDE :</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:400; font-style:italic;&quot;&gt;Latitude : &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLabel" name="adresse">
@@ -120,7 +120,7 @@ border-color: rgb(119, 118, 123);</string>
     <rect>
      <x>10</x>
      <y>190</y>
-     <width>236</width>
+     <width>251</width>
      <height>18</height>
     </rect>
    </property>
@@ -130,7 +130,7 @@ border-color: rgb(119, 118, 123);</string>
     </font>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#c01c28;&quot;&gt;Adresse la plus proche dans la BAN :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:normal; color:#c01c28;&quot;&gt;ADRESSE LA PLUS PROCHE (BAN) :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLabel" name="nombreLabel">
@@ -138,7 +138,7 @@ border-color: rgb(119, 118, 123);</string>
     <rect>
      <x>10</x>
      <y>270</y>
-     <width>237</width>
+     <width>351</width>
      <height>18</height>
     </rect>
    </property>
@@ -148,7 +148,7 @@ border-color: rgb(119, 118, 123);</string>
     </font>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#c01c28;&quot;&gt;Nombre d'objets dans un périmètre :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:normal; color:#c01c28;&quot;&gt;NOMBRE D'OBJETS DANS UN CERTAIN RAYON :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QSpinBox" name="perimetreBox">

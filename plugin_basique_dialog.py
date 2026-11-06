@@ -56,5 +56,5 @@ class PluginBasiqueDialog(QtWidgets.QDialog, FORM_CLASS):
         else:  
             super().keyPressEvent(event)
 
-    def closeEvent(self):
+    def closeEvent(self, event):
         self.extension.echap_cross_clicked()
