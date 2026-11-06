@@ -22,13 +22,15 @@
  ***************************************************************************/
 """
 from qgis.PyQt.QtCore import QLocale, QTranslator, QCoreApplication
-from qgis.core import QgsSettings
+from qgis.core import QgsSettings, QgsFillSymbol, QgsSingleSymbolRenderer, QgsVectorLayer, QgsFeature, QgsProject, QgsWkbTypes, QgsMapLayerType, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsGeometry, QgsDistanceArea
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
+from qgis.gui import QgsMapToolEmitPoint
 
 # Import the code for the dialog
 from .plugin_basique_dialog import PluginBasiqueDialog
 import os.path
+import requests
 
 
 class PluginBasique:
@@ -178,6 +180,124 @@ class PluginBasique:
                 action)
             self.iface.removeToolBarIcon(action)
 
+    def displayPoint(self, pointXY):
+        coords = []
+        projet = QgsProject.instance()
+
+        # Changement de projection
+        source_crs = projet.crs()
+        dest_crs = QgsCoordinateReferenceSystem(4326)
+        transformation = QgsCoordinateTransform(source_crs, dest_crs, QgsProject.instance())
+        new_pointXY = transformation.transform(pointXY)
+
+        # Affichage des coordonnées
+        for point in new_pointXY:
+            coords.append(point)
+
+        self.dlg.long_affichage.setText(f"{coords[0]}")
+        self.dlg.lat_affichage.setText(f"{coords[1]}")
+
+        return coords
+
+    def displayAdress(self, pointXY):
+
+        # Code inspiré du dépot github disponible à l'adresse : https://github.com/anquetos/meteoviz-streamlit-app/blob/a92c6dff582f00ef562b2738120110e7be3ee943/api_adresse.py
+        # Qui se présente comme : "Module designed to search for addresses in France using the address API"
+
+        coords = self.displayPoint(pointXY)
+        REVERSE_URL = 'https://api-adresse.data.gouv.fr/reverse'
+
+        parametres = {
+            'lon': coords[0],
+            'lat': coords[1]
+        }
+        lat = parametres['lat']
+
+        n_loop = len(str(lat).split('.')[1])
+
+        while n_loop != 0:
+            r = requests.get(REVERSE_URL, params=parametres)
+
+            r.raise_for_status()
+
+            adresse = []
+
+            if r.json().get('features'):
+                for feature in r.json().get('features'):
+                    lon, lat = feature.get('geometry').get('coordinates')
+                    adresse.append({**feature.get('properties'), **{"lon": lon, "lat": lat}})
+
+            lat = float(str(lat)[:-1])
+
+            n_loop -= 1
+
+        self.dlg.adresse_affichage.setText(f"{adresse[0]["name"]}, {adresse[0]["postcode"]}, {adresse[0]["city"]}")
+
+    def displayNbrObject(self, pointXY) :
+        projet = QgsProject.instance()
+
+        # Changement de projection du point cliqué
+        project_crs = projet.crs()
+        lambert93_crs = QgsCoordinateReferenceSystem(2154)
+        transformation = QgsCoordinateTransform(project_crs, lambert93_crs, QgsProject.instance())
+        new_pointXY = transformation.transform(pointXY)
+
+        # Identifier le layer à intersecter 
+        selected_layer = self.dlg.comboBox.currentText()
+        print(selected_layer)
+        layers = projet.mapLayersByName(selected_layer)
+        print("Entités dans la couche :", layers[0].featureCount())
+
+        # Définition du rayon
+        rayonRechercheEnMetres = self.dlg.perimetreBox.value()
+        # Conversion du pointXY dans un format acceptable par le buffer
+        pt_geom = QgsGeometry.fromPointXY(new_pointXY)
+        # Création du buffer
+        buffered_geom = pt_geom.buffer(float(rayonRechercheEnMetres), 20)
+        # Reprojection du buffer
+        # TODO selectedLayerCrs = ....
+        selectedLayerCrs = QgsCoordinateReferenceSystem(4326)
+        transformationL93versWgs84 = QgsCoordinateTransform(lambert93_crs, selectedLayerCrs, QgsProject.instance())
+        buffered_geom.transform(transformationL93versWgs84)
+        
+        compteur = 0
+        for feature in layers[0].getFeatures():
+            if feature.geometry().intersects(buffered_geom) :
+                #si features est dans l'attribut, on ajoute 1 au compteur
+                compteur += 1
+
+        self.dlg.nombreAffichage.setText(str(compteur))
+        
+        return buffered_geom
+
+    def displayBufferLayer(self, pointXY):
+
+        buffer = self.displayNbrObject(pointXY)
+        new_layer = QgsVectorLayer(
+            "Polygon?crs=EPSG:4326",
+            "Zone Tampon autour du point cliqué",
+            "memory"
+        )
+
+        projet = QgsProject.instance()
+
+        new_entity = QgsFeature()
+
+        new_entity.setGeometry(buffer)
+
+        new_layer.dataProvider().addFeatures([new_entity])
+        new_layer.updateExtents()
+
+        symbol = QgsFillSymbol.createSimple({
+            "style": "no",
+            "outline_color": "0,0,0,255",
+            "outline_style": "solid",
+            "outline_width": "0.3"
+        })
+        new_layer.setRenderer(QgsSingleSymbolRenderer(symbol))
+        projet.addMapLayer(new_layer)
+
+
 
     def run(self):
         """Run method that performs all the real work"""
@@ -187,6 +307,42 @@ class PluginBasique:
         if self.first_start == True:
             self.first_start = False
             self.dlg = PluginBasiqueDialog()
+
+
+        #USER STORY 1 : Affichage d'une liste déroulante des ponctuels du projet
+
+        self.dlg.comboBox.clear()
+
+        projet = QgsProject.instance()
+        layers = projet.mapLayers().values()
+        for layer in layers:
+            if layer.type()== QgsMapLayerType.VectorLayer and layer.geometryType() == QgsWkbTypes.PointGeometry :
+                self.dlg.comboBox.addItem(layer.name())
+
+
+        #USER STORY 2 : Affichage des coordonnées d'un point sur la carte au clic de la souris
+        
+        self.dlg.long_affichage.clear()
+        self.dlg.lat_affichage.clear()
+
+        self.canvas = self.iface.mapCanvas()
+        self.pointTool = QgsMapToolEmitPoint(self.canvas)
+        self.pointTool.canvasClicked.connect(self.displayPoint)
+        self.canvas.setMapTool(self.pointTool)
+
+        #USER STORY 3 : Affichage de l'adresse la plus proche dans la BAN quand on clique sur un point
+
+        self.dlg.adresse_affichage.clear()
+
+        self.pointTool.canvasClicked.connect(self.displayAdress)
+
+        # USER STORY 4 : Affichage d'un nombre d'objets de la couche sélectionnée en fonction d'un périmètre entrée par l'utilisateur autour du point cliqué.
+
+        self.pointTool.canvasClicked.connect(self.displayNbrObject)
+
+        # USER STORY 5 : Visualisation de la zone tampon de X mètre autour du point cliqué
+
+        self.pointTool.canvasClicked.connect(self.displayBufferLayer)
 
         # show the dialog
         self.dlg.show()
