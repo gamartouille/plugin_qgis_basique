@@ -1,4 +1,4 @@
-# Plugin aux fonctionnalites basiques
+# Plugin QGIS aux fonctionnalites basiques
 
 ## Cadre et Objectifs
 
